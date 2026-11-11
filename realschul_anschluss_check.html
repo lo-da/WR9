@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Realschul-Anschluss-Check: Welcher Weg passt zu mir?</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    .radio-card {
+      transition: all 0.2s ease-in-out;
+    }
+    .radio-card:hover {
+      transform: translateY(-2px);
+    }
+    .radio-card.selected {
+      border-color: #2563eb !important;
+      background-color: #eff6ff !important;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+    }
+    .shake {
+      animation: shake 0.4s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .pulse-green {
+      animation: pulseGreen 0.5s ease-in-out;
+    }
+    @keyframes pulseGreen {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen py-8 px-4 font-sans antialiased">
+  <div class="max-w-4xl mx-auto">
+
+    <!-- Top Header -->
+    <header class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold uppercase tracking-wider mb-2">
+            Entscheidungshilfe nach der 10. Klasse
+          </span>
+          <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Realschul-Anschluss-Check
+          </h1>
+          <p class="text-slate-600 text-sm mt-1">
+            Duale Ausbildung, FOS oder Gymnasium? Welcher Weg passt zu den Voraussetzungen?
+          </p>
+        </div>
+
+        <!-- Mode Switcher -->
+        <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200 self-start md:self-auto">
+          <button id="btn-mode-max" onclick="setMode('max')" class="px-3 py-1.5 rounded-lg text-sm font-semibold transition bg-white text-blue-600 shadow-sm border border-slate-200">
+            👦 Fall 1: Max
+          </button>
+          <button id="btn-mode-lisa" onclick="setMode('lisa')" class="px-3 py-1.5 rounded-lg text-sm font-semibold transition text-slate-600 hover:text-slate-900">
+            👧 Fall 2: Lisa
+          </button>
+          <button id="btn-mode-self" onclick="setMode('self')" class="px-3 py-1.5 rounded-lg text-sm font-semibold transition text-slate-600 hover:text-slate-900">
+            ✨ Mein Selbstcheck
+          </button>
+        </div>
+      </div>
+
+      <!-- Case Narrative Box (for Max and Lisa) -->
+      <div id="case-box" class="hidden mt-5 p-4 rounded-xl border transition-all duration-300">
+        <div class="flex items-start gap-3">
+          <span id="case-avatar" class="text-3xl">👦</span>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <h2 id="case-title" class="font-bold text-sm text-slate-900">Aussage von Max</h2>
+              <span class="text-xs px-2 py-0.5 rounded font-medium bg-blue-100 text-blue-800">Lies genau & finde die Kriterien</span>
+            </div>
+            <p id="case-quote" class="text-xs leading-relaxed italic text-slate-700 mb-2">„...“</p>
+            <p class="text-xs font-semibold text-slate-500">
+              👉 <span class="text-slate-700">Arbeitsauftrag:</span> Wähle unten in den 4 Bereichen die Optionen aus, die exakt zu dieser Aussage passen. Klicke dann auf <span class="text-blue-600 font-bold">„Überprüfen“</span>!
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Questionnaire -->
+    <div class="space-y-6">
+
+      <!-- Kriterium 1: Einkommen -->
+      <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">1</span>
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Einkommen & finanzielle Unabhängigkeit</h2>
+            <p class="text-xs text-slate-500">Wie wichtig ist eigenes Geld direkt nach der 10. Klasse?</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-3" id="group-q1">
+          <div onclick="selectCard('q1', 'ausbildung', this)" class="radio-card cursor-pointer border border-slate-200 rounded-xl p-4 bg-white flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-bold text-slate-800 text-sm">Sofort eigenes Gehalt</span>
+                <span class="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-medium">Ausbildungsvergütung</span>
+              </div>
+              <p class="text-xs text-slate-600">
+                Ich will ab Tag 1 eigenes Geld verdienen, unabhängig sein und mir z. B. Führerschein oder eigene Wünsche finanzieren.
+              </p>
+            </div>
+          </div>
+
+          <div onclick="selectCard('q1', 'schule', this)" class="radio-card cursor-pointer border border-slate-200 rounded-xl p-4 bg-white flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-bold text-slate-800 text-sm">Kann noch 2–3 Jahre warten</span>
+                <span class="text-xs px-2 py-0.5 bg-slate-100 text-slate-600 rounded font-medium">Vollzeitschule</span>
+              </div>
+              <p class="text-xs text-slate-600">
+                Meine Eltern unterstützen mich voll. Ich brauche aktuell kein eigenes Einkommen und setze voll auf die Schule.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Kriterium 2: Lernform -->
+      <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">2</span>
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Lern- & Arbeitsform</h2>
+            <p class="text-xs text-slate-500">Wie wird neues Wissen am liebsten angeeignet?</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-3" id="group-q2">
+          <div onclick="selectCard('q2', 'praxis', this)" class="radio-card cursor-pointer border border-slate-200 rounded-xl p-4 bg-white">
+            <div class="font-bold text-slate-800 text-sm mb-1">Praktisch anpacken</div>
+            <p class="text-xs text-slate-600">
+              Am besten durch direktes Tun, Werkstatt, Schrauben, Kundenkontakt und Praxis im Betrieb – kein langes Stillsitzen mehr!
+            </p>
+          </div>
+
+          <div onclick="selectCard('q2', 'mix', this)" class="radio-card cursor-pointer border border-slate-200 rounded-xl p-4 bg-white">
+            <div class="font-bold text-slate-800 text-sm mb-1">Mischung: Theorie & Praxis</div>
+            <p class="text-xs text-slate-600">
+              Schulischer Unterricht kombiniert mit festen Praktikumsphasen im Betrieb (fachpraktische Ausbildung).
+            </p>
+          </div>
+
+          <div onclick="selectCard('q2', 'theorie', this)" class="radio-card cursor-pointer border border-slate-200 rounded-xl p-4 bg-white">
+            <div class="font-bold text-slate-800 text-sm mb-1">Strukturierte Theorie</div>
+            <p class="text-xs text-slate-600">
+              Gerne aus Fachbüchern, Texten, Klausuren und theoretischem Unterricht im reinen Klassenverband.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Kriterium 3: Notenschnitt -->
+      <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">3</span>
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Notenvoraussetzung (Notenschnitt in D, M, E)</h2>
+            <p class="text-xs text-slate-500">Welcher Schnitt ist im Zwischenzeugnis realistisch?</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-3" id="group-q3">
+          <div onclick="selectCard('q3', 'top', this)" class="radio-card cursor-pointer border border-slate-200 rounded-xl p-4 bg-white">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-slate-800 text-sm">Schnitt ≤ 2,5</span>
+              <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded font-medium">Top-Schnitt</span>
+            </div>
+            <p class="text-xs text-slate-600">
+              Zugang zu Gymnasium (Einführungsklasse), FOS und allen Lehrstellen sicher möglich.
+            </p>
+          </div>
+
+          <div onclick="selectCard('q3', 'fos', this)" class="radio-card cursor-pointer border border-slate-200 rounded-xl p-4 bg-white">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-slate-800 text-sm">Schnitt 2,6 bis 3,5</span>
+              <span class="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded font-medium">FOS-Hürde gepackt</span>
+            </div>
+            <p class="text-xs text-slate-600">
+              Erfüllt exakt die gesetzliche Hürde (Schnitt ≤ 3,5) für die Fachoberschule (FOS).
+            </p>
+          </div>
+
+          <div onclick="selectCard('q3', 'below', this)" class="radio-card cursor-pointer border border-slate-200 rounded-xl p-4 bg-white">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-slate-800 text-sm">Schnitt ab 3,6</span>
+              <span class="text-xs px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-medium">FOS-Hürde verfehlt</span>
+            </div>
+            <p class="text-xs text-slate-600">
+              FOS direkt nach RS nicht möglich. Fokus liegt voll auf der dualen Berufsausbildung im Betrieb.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Kriterium 4: Zukunftsziel -->
+      <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">4</span>
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Zukunftsziel & Flexibilität</h2>
+            <p class="text-xs text-slate-500">Wo geht die Reise in 3 bis 5 Jahren hin?</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-3" id="group-q4">
+          <div onclick="selectCard('q4', 'job', this)" class="radio-card cursor-pointer border border-slate-200 rounded-xl p-4 bg-white">
+            <div class="font-bold text-slate-800 text-sm mb-1">Solider Berufsabschluss</div>
+            <p class="text-xs text-slate-600">
+              Schnell einen anerkannten Berufsabschluss in der Hand haben. Weiterbildung (BOS/Meister) später nach Bedarf!
+            </p>
+          </div>
+
+          <div onclick="selectCard('q4', 'fh', this)" class="radio-card cursor-pointer border border-slate-200 rounded-xl p-4 bg-white">
+            <div class="font-bold text-slate-800 text-sm mb-1">Fachhochschulreife (Fachabi)</div>
+            <p class="text-xs text-slate-600">
+              Ziel ist das Fachabitur an der FOS, um danach an einer Fachhochschule (HAW) zu studieren (z. B. BWL, Technik).
+            </p>
+          </div>
+
+          <div onclick="selectCard('q4', 'uni', this)" class="radio-card cursor-pointer border border-slate-200 rounded-xl p-4 bg-white">
+            <div class="font-bold text-slate-800 text-sm mb-1">Allgemeines Abitur (Uni)</div>
+            <p class="text-xs text-slate-600">
+              Vollabitur anstreben für uneingeschränkten Zugang zu jedem universitären Studiengang.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Action & Verification Bar for Case Modes -->
+      <div id="check-action-bar" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Fall-Überprüfung</span>
+          <p id="action-hint" class="text-sm font-bold text-slate-800">Hast du alle 4 Kriterien für Max gewählt?</p>
+        </div>
+        <button id="btn-validate" onclick="validateCaseAnswers()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow transition text-sm flex items-center gap-2">
+          <span>🔍</span> Eingabe überprüfen
+        </button>
+      </div>
+
+      <!-- Case Feedback Alert Banner -->
+      <div id="case-feedback-banner" class="hidden rounded-2xl p-6 transition-all duration-300">
+        <!-- Dynamically injected -->
+      </div>
+
+      <!-- Live Results Panel (Shown in Self-Check Mode) -->
+      <section id="results-card" class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl shadow-lg p-6 md:p-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-700">
+          <div>
+            <span class="text-blue-400 text-xs font-bold uppercase tracking-wider">Deine persönliche Auswertung</span>
+            <h3 id="result-title" class="text-2xl font-black mt-1">Bitte wähle alle 4 Kriterien aus</h3>
+            <p id="result-subtitle" class="text-slate-300 text-xs mt-1">Sobald alle Kriterien ausgewählt sind, wird dein Profil berechnet.</p>
+          </div>
+          <button onclick="resetAllSelections()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl text-xs font-semibold transition self-start md:self-auto border border-slate-600">
+            🔄 Auswahl leeren
+          </button>
+        </div>
+
+        <!-- Scores Breakdown -->
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+          <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-slate-300">Duale Berufsausbildung</span>
+              <span id="score-ausbildung" class="text-sm font-black text-emerald-400">0 %</span>
+            </div>
+            <div class="w-full bg-slate-700 h-2.5 rounded-full overflow-hidden">
+              <div id="bar-ausbildung" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-slate-300">Fachoberschule (FOS)</span>
+              <span id="score-fos" class="text-sm font-black text-blue-400">0 %</span>
+            </div>
+            <div class="w-full bg-slate-700 h-2.5 rounded-full overflow-hidden">
+              <div id="bar-fos" class="bg-blue-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-slate-300">Gymnasium (Oberstufe)</span>
+              <span id="score-gym" class="text-sm font-black text-purple-400">0 %</span>
+            </div>
+            <div class="w-full bg-slate-700 h-2.5 rounded-full overflow-hidden">
+              <div id="bar-gym" class="bg-purple-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommendation Feedback Box -->
+        <div id="feedback-box" class="hidden bg-slate-800/90 border border-slate-700 rounded-xl p-5">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl" id="feedback-icon">🎯</span>
+            <div>
+              <h4 id="feedback-heading" class="text-sm font-bold text-white mb-1">Empfehlung</h4>
+              <p id="feedback-text" class="text-xs text-slate-300 leading-relaxed mb-3">...</p>
+              <div class="p-3 bg-blue-950/60 border border-blue-800/60 rounded-lg text-xs text-blue-200">
+                💡 <span class="font-bold">Bayerns Joker (Kein Abschluss ohne Anschluss):</span> Egal für welchen Weg du dich entscheidest: Jeder erreichte Abschluss öffnet den Weg zur nächsten Stufe (BOS, Meister, Hochschule)!
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script>
+    let currentMode = 'max'; // Starts directly with Max!
+
+    const userAnswers = {
+      q1: null,
+      q2: null,
+      q3: null,
+      q4: null
+    };
+
+    const caseData = {
+      max: {
+        title: "Fall 1: Max (9c)",
+        avatar: "👦",
+        quote: "„Ich will nach der 10. Klasse endlich in die Praxis, an echten Motorrädern schrauben und am Monatsende mein eigenes Gehalt auf dem Konto haben, damit ich mir den Führerschein leisten kann. Meine Eltern wollen, dass ich an die FOS gehe. Aber in Deutsch, Mathe und Englisch habe ich aktuell einen Schnitt von 3,7. Damit erfülle ich die Hürde von 3,5 sowieso nicht. Ich will einen soliden Berufsabschluss haben und mich lieber später weiterbilden!“",
+        correct: {
+          q1: 'ausbildung',
+          q2: 'praxis',
+          q3: 'below',
+          q4: 'job'
+        },
+        correctHeadline: "🎉 Richtig erkannt! Für Max ist die Duale Berufsausbildung optimal!",
+        correctDetails: "Max möchte ab Tag 1 eigenes Geld verdienen, lernt am besten durch praktisches Schrauben und sein Notenschnitt von 3,7 versperrt den direkten FOS-Zugang (max. 3,5). Die Lehre gibt ihm genau die Praxis, die er will – und dank Durchlässigkeit kann er später immer noch die BOS besuchen!"
+      },
+      lisa: {
+        title: "Fall 2: Lisa (9c)",
+        avatar: "👧",
+        quote: "„Bei mir sieht das ganz anders aus: Meine Eltern unterstützen mich voll, ich brauche nach der 10. Klasse noch kein eigenes Geld. Mein klares Ziel ist es, später Betriebswirtschaft an einer Fachhochschule zu studieren. Dafür brauche ich das Fachabitur. Ich lerne gerne strukturiert aus Büchern und habe kein Problem mit theoretischem Unterricht. Bei den Noten klappt es auch: Mein Schnitt in Deutsch, Mathe und Englisch liegt bei 2,3, also sicher unter 3,5!“",
+        correct: {
+          q1: 'schule',
+          q2: ['theorie', 'mix'],
+          q3: ['fos', 'top'],
+          q4: 'fh'
+        },
+        correctHeadline: "🎉 Richtig erkannt! Für Lisa ist die Fachoberschule (FOS) optimal!",
+        correctDetails: "Lisa erfüllt mit einem Notenschnitt von 2,3 die gesetzliche FOS-Aufnahmehürde (≤ 3,5) sicher. Sie braucht kein sofortiges Gehalt, lernt gerne strukturiert aus Büchern und strebt zielgerichtet die Fachhochschulreife für ein BWL-Studium an!"
+      }
+    };
+
+    function setMode(mode) {
+      currentMode = mode;
+      
+      const btnMax = document.getElementById('btn-mode-max');
+      const btnLisa = document.getElementById('btn-mode-lisa');
+      const btnSelf = document.getElementById('btn-mode-self');
+      const caseBox = document.getElementById('case-box');
+      const actionBar = document.getElementById('check-action-bar');
+      const banner = document.getElementById('case-feedback-banner');
+      const resultsCard = document.getElementById('results-card');
+
+      [btnMax, btnLisa, btnSelf].forEach(b => {
+        b.className = "px-3 py-1.5 rounded-lg text-sm font-semibold transition text-slate-600 hover:text-slate-900";
+      });
+
+      banner.classList.add('hidden');
+      resetAllSelections();
+
+      if (mode === 'max' || mode === 'lisa') {
+        const d = caseData[mode];
+        if (mode === 'max') {
+          btnMax.className = "px-3 py-1.5 rounded-lg text-sm font-semibold transition bg-white text-blue-600 shadow-sm border border-slate-200";
+          caseBox.className = "mt-5 p-4 rounded-xl border border-blue-200 bg-blue-50/70";
+        } else {
+          btnLisa.className = "px-3 py-1.5 rounded-lg text-sm font-semibold transition bg-white text-emerald-600 shadow-sm border border-slate-200";
+          caseBox.className = "mt-5 p-4 rounded-xl border border-emerald-200 bg-emerald-50/70";
+        }
+        
+        caseBox.classList.remove('hidden');
+        document.getElementById('case-avatar').textContent = d.avatar;
+        document.getElementById('case-title').textContent = d.title;
+        document.getElementById('case-quote').textContent = d.quote;
+        
+        actionBar.classList.remove('hidden');
+        document.getElementById('action-hint').textContent = `Wähle die 4 passenden Kriterien für ${mode === 'max' ? 'Max' : 'Lisa'} aus:`;
+        
+        // Hide general results in case mode until validated
+        resultsCard.classList.add('hidden');
+      } else {
+        btnSelf.className = "px-3 py-1.5 rounded-lg text-sm font-semibold transition bg-white text-blue-600 shadow-sm border border-slate-200";
+        caseBox.classList.add('hidden');
+        actionBar.classList.add('hidden');
+        resultsCard.classList.remove('hidden');
+      }
+    }
+
+    function selectCard(question, value, el) {
+      userAnswers[question] = value;
+      
+      const parent = document.getElementById('group-' + question);
+      const cards = parent.querySelectorAll('.radio-card');
+      cards.forEach(c => c.classList.remove('selected'));
+      
+      el.classList.add('selected');
+
+      // Hide feedback banner on new selection
+      document.getElementById('case-feedback-banner').classList.add('hidden');
+
+      if (currentMode === 'self') {
+        calculateResult();
+      }
+    }
+
+    function validateCaseAnswers() {
+      const banner = document.getElementById('case-feedback-banner');
+      const d = caseData[currentMode];
+      
+      if (!userAnswers.q1 || !userAnswers.q2 || !userAnswers.q3 || !userAnswers.q4) {
+        banner.className = "rounded-2xl p-5 border border-amber-300 bg-amber-50 text-amber-900 shake";
+        banner.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">⚠️</span>
+            <div>
+              <h4 class="font-bold text-sm">Noch unvollständig!</h4>
+              <p class="text-xs mt-0.5">Bitte wähle in allen 4 Bereichen eine Option für ${currentMode === 'max' ? 'Max' : 'Lisa'} aus.</p>
+            </div>
+          </div>
+        `;
+        banner.classList.remove('hidden');
+        return;
+      }
+
+      // Check correctness
+      let isCorrect = true;
+      let errorHints = [];
+
+      // Q1 check
+      if (userAnswers.q1 !== d.correct.q1) {
+        isCorrect = false;
+        errorHints.push(currentMode === 'max' ? "Braucht Max sofort eigenes Geld oder kann er noch warten?" : "Muss Lisa sofort eigenes Geld verdienen?");
+      }
+
+      // Q2 check
+      if (Array.isArray(d.correct.q2)) {
+        if (!d.correct.q2.includes(userAnswers.q2)) isCorrect = false;
+      } else {
+        if (userAnswers.q2 !== d.correct.q2) {
+          isCorrect = false;
+          errorHints.push(currentMode === 'max' ? "Wie lernt Max am liebsten (Schrauben/Praxis oder Theorie)?" : "Wie lernt Lisa?");
+        }
+      }
+
+      // Q3 check
+      if (Array.isArray(d.correct.q3)) {
+        if (!d.correct.q3.includes(userAnswers.q3)) {
+          isCorrect = false;
+          errorHints.push("Überprüfe den Notenschnitt in D, M, E!");
+        }
+      } else {
+        if (userAnswers.q3 !== d.correct.q3) {
+          isCorrect = false;
+          errorHints.push(currentMode === 'max' ? "Schau auf Max' Schnitt (3,7): Ist die FOS-Hürde (3,5) erreicht oder verfehlt?" : "Schau auf Lisas Schnitt (2,3)!");
+        }
+      }
+
+      // Q4 check
+      if (userAnswers.q4 !== d.correct.q4) {
+        isCorrect = false;
+        errorHints.push(currentMode === 'max' ? "Was ist Max' Ziel (Berufsabschluss oder Studium)?" : "Was ist Lisas Ziel?");
+      }
+
+      if (isCorrect) {
+        banner.className = "rounded-2xl p-6 border border-emerald-300 bg-emerald-50 text-emerald-900 pulse-green shadow-sm";
+        banner.innerHTML = `
+          <div class="flex items-start gap-4">
+            <span class="text-3xl">🎯</span>
+            <div>
+              <h3 class="font-extrabold text-base text-emerald-950 mb-1">${d.correctHeadline}</h3>
+              <p class="text-xs text-emerald-800 leading-relaxed mb-3">${d.correctDetails}</p>
+              <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-100 text-emerald-900 rounded-lg text-xs font-bold">
+                ✓ 4 von 4 Kriterien richtig zugeordnet!
+              </div>
+            </div>
+          </div>
+        `;
+        banner.classList.remove('hidden');
+      } else {
+        banner.className = "rounded-2xl p-5 border border-rose-300 bg-rose-50 text-rose-900 shake";
+        banner.innerHTML = `
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">❌</span>
+            <div>
+              <h4 class="font-bold text-sm text-rose-950">Noch nicht ganz passend!</h4>
+              <p class="text-xs text-rose-800 mt-1">Lies noch einmal genau im Text nach:</p>
+              <ul class="list-disc list-inside text-xs mt-1 text-rose-700 space-y-0.5">
+                ${errorHints.map(h => `<li>${h}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        `;
+        banner.classList.remove('hidden');
+      }
+    }
+
+    function calculateResult() {
+      const q1 = userAnswers.q1;
+      const q2 = userAnswers.q2;
+      const q3 = userAnswers.q3;
+      const q4 = userAnswers.q4;
+
+      if (!q1 || !q2 || !q3 || !q4) {
+        document.getElementById('result-title').textContent = "Bitte alle 4 Kriterien auswählen";
+        document.getElementById('result-subtitle').textContent = "Wähle in jedem Bereich deine Option aus.";
+        document.getElementById('feedback-box').classList.add('hidden');
+        updateBars(0, 0, 0);
+        return;
+      }
+
+      let ptsAusbildung = 0;
+      let ptsFos = 0;
+      let ptsGym = 0;
+
+      // Q1: Einkommen
+      if (q1 === 'ausbildung') { ptsAusbildung += 35; }
+      if (q1 === 'schule') { ptsFos += 20; ptsGym += 25; }
+
+      // Q2: Lernform
+      if (q2 === 'praxis') { ptsAusbildung += 35; }
+      if (q2 === 'mix') { ptsFos += 35; ptsAusbildung += 15; }
+      if (q2 === 'theorie') { ptsGym += 35; ptsFos += 15; }
+
+      // Q3: Noten
+      if (q3 === 'top') { ptsGym += 25; ptsFos += 25; ptsAusbildung += 15; }
+      if (q3 === 'fos') { ptsFos += 30; ptsAusbildung += 20; ptsGym += 5; }
+      if (q3 === 'below') {
+        ptsAusbildung += 40;
+        ptsFos = Math.min(ptsFos, 15);
+        ptsGym = 0;
+      }
+
+      // Q4: Zukunft
+      if (q4 === 'job') { ptsAusbildung += 30; }
+      if (q4 === 'fh') { ptsFos += 30; ptsAusbildung += 15; }
+      if (q4 === 'uni') { ptsGym += 35; ptsFos += 15; }
+
+      // Normalize to %
+      const total = ptsAusbildung + ptsFos + ptsGym;
+      const pctAusbildung = Math.round((ptsAusbildung / total) * 100);
+      const pctFos = Math.round((ptsFos / total) * 100);
+      const pctGym = Math.round((ptsGym / total) * 100);
+
+      updateBars(pctAusbildung, pctFos, pctGym);
+
+      const fbBox = document.getElementById('feedback-box');
+      fbBox.classList.remove('hidden');
+
+      if (q3 === 'below') {
+        document.getElementById('result-title').textContent = "Empfehlung: Duale Berufsausbildung";
+        document.getElementById('feedback-icon').textContent = "🛠️";
+        document.getElementById('feedback-heading').textContent = "Klarer Weg: Duale Ausbildung als Sprungbrett";
+        document.getElementById('feedback-text').textContent = 
+          "Da dein Notenschnitt in D, M, E voraussichtlich über 3,5 liegt, ist die Fachoberschule aktuell verschlossen. Die Duale Ausbildung ist deine Chance: Hier zählst du als Macher im Betrieb und verdienst sofort dein eigenes Geld. Über die Berufsoberschule (BOS) kannst du nach der Lehre trotzdem noch jedes Abitur erreichen!";
+      } else if (pctAusbildung >= pctFos && pctAusbildung >= pctGym) {
+        document.getElementById('result-title').textContent = "Empfehlung: Duale Berufsausbildung";
+        document.getElementById('feedback-icon').textContent = "💼";
+        document.getElementById('feedback-heading').textContent = "Starker Praxisfokus & finanzielle Unabhängigkeit";
+        document.getElementById('feedback-text').textContent = 
+          "Dein Profil spricht klar für eine Duale Berufsausbildung: Du möchtest praktisch im echten Berufsleben anpacken und dein eigenes Gehalt beziehen. Mit einem Realschulabschluss bist du auf dem Ausbildungsmarkt heiß begehrt!";
+      } else if (pctFos >= pctAusbildung && pctFos >= pctGym) {
+        document.getElementById('result-title').textContent = "Empfehlung: Fachoberschule (FOS)";
+        document.getElementById('feedback-icon').textContent = "🎓";
+        document.getElementById('feedback-heading').textContent = "Perfekte Balance aus Fachabitur & Praktikum";
+        document.getElementById('feedback-text').textContent = 
+          "Dein Notenschnitt passt zur FOS (≤ 3,5) und du schätzt die Kombination aus Fachtheorie und fachpraktischer Ausbildung. Die FOS führt dich in zwei Jahren zielsicher zur Fachhochschulreife für ein Studium an einer Fachhochschule (HAW).";
+      } else {
+        document.getElementById('result-title').textContent = "Empfehlung: Gymnasium / Oberstufe";
+        document.getElementById('feedback-icon').textContent = "🏛️";
+        document.getElementById('feedback-heading').textContent = "Fokus auf allgemeine Hochschulreife";
+        document.getElementById('feedback-text').textContent = 
+          "Mit deinem sehr guten Notenschnitt und Freude am theoretischen, vertieften Arbeiten kommt die Einführungsklasse am Gymnasium in Frage. Das Ziel ist das Voll-Abitur für universitäre Studiengänge.";
+      }
+    }
+
+    function updateBars(pAusbildung, pFos, pGym) {
+      document.getElementById('score-ausbildung').textContent = pAusbildung + " %";
+      document.getElementById('bar-ausbildung').style.width = pAusbildung + "%";
+
+      document.getElementById('score-fos').textContent = pFos + " %";
+      document.getElementById('bar-fos').style.width = pFos + "%";
+
+      document.getElementById('score-gym').textContent = pGym + " %";
+      document.getElementById('bar-gym').style.width = pGym + "%";
+    }
+
+    function resetAllSelections() {
+      userAnswers.q1 = null;
+      userAnswers.q2 = null;
+      userAnswers.q3 = null;
+      userAnswers.q4 = null;
+
+      document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('case-feedback-banner').classList.add('hidden');
+      
+      if (currentMode === 'self') {
+        calculateResult();
+      }
+    }
+
+    // Direkt beim Laden mit Fall 1 (Max) starten:
+    window.addEventListener('DOMContentLoaded', () => {
+      setMode('max');
+    });
+  </script>
+</body>
+</html>
